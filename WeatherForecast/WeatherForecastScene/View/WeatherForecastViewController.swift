@@ -12,7 +12,7 @@ class WeatherForecastViewController: UIViewController {
 	
 	// MARK: - Dependencies
 	public let locationManager = CLLocationManager()
-	public var weatherData = WeatherData()
+	//public var weatherData = WeatherData()
 	public let networkManager = NetworkManager.shared
 	
 	// MARK: - Private properties
@@ -26,7 +26,7 @@ class WeatherForecastViewController: UIViewController {
 		super.viewDidLoad()
 		view.backgroundColor = .purple
 		setupView()
-		startLocationManager()
+		//startLocationManager()
 	}
 
 
@@ -137,49 +137,49 @@ extension WeatherForecastViewController {
 
 
 // MARK: - CLLocationManagerDelegate
-extension WeatherForecastViewController: CLLocationManagerDelegate {
-	public func startLocationManager() {
-
-		locationManager.delegate = self
-		locationManager.requestWhenInUseAuthorization()
-		locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
-		locationManager.pausesLocationUpdatesAutomatically = false
-		locationManager.startUpdatingLocation()
-	}
-
-	public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-		if let lastlocation = locations.last {
-			updateCoordinates(latitude: lastlocation.coordinate.latitude, longitude: lastlocation.coordinate.longitude)
-		}
-	}
-
-	public func updateCoordinates(latitude: Double, longitude: Double) {
-
-		let endpoint = APIEndpoint.weather(latitude: latitude, longitude: longitude)
-
-		networkManager.fetchData(url: endpoint.url) { [weak self] (result: Result<WeatherData, Error>) in
-			guard let self = self else { return }
-			switch result {
-			case .success(let weatherData):
-				self.weatherData = weatherData
-
-				DispatchQueue.main.async {
-					self.updateView()
-				}
-			case .failure(let error):
-				print(SizesAndStrings.strings.errorfetching, error.localizedDescription)
-			}
-		}
-	}
-
-
-	public func updateView() {
-		cityNameView.text = weatherData.name
-		//weatherDescribtionLabel.text = DataSource.weatherIDs[weatherData.weather[0].id]
-
-		let tempInFahrenheit = weatherData.main.temp
-		let tempInCelsius = Int(tempInFahrenheit -  SizesAndStrings.farenheitTemp)
-		tempertureLabel.text = "\(tempInCelsius)" + SizesAndStrings.strings.celcies
-		activityIndicator.stopAnimating()
-	}
-}
+//extension WeatherForecastViewController: CLLocationManagerDelegate {
+//	public func startLocationManager() {
+//
+//		locationManager.delegate = self
+//		locationManager.requestWhenInUseAuthorization()
+//		locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+//		locationManager.pausesLocationUpdatesAutomatically = false
+//		locationManager.startUpdatingLocation()
+//	}
+//
+//	public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+//		if let lastlocation = locations.last {
+//			updateCoordinates(latitude: lastlocation.coordinate.latitude, longitude: lastlocation.coordinate.longitude)
+//		}
+//	}
+//
+//	public func updateCoordinates(latitude: Double, longitude: Double) {
+//
+//		let endpoint = APIEndpoint.weather(latitude: latitude, longitude: longitude)
+//
+//		networkManager.fetchData(url: endpoint.url) { [weak self] (result: Result<WeatherData, Error>) in
+//			guard let self = self else { return }
+//			switch result {
+//			case .success(let weatherData):
+//				self.weatherData = weatherData
+//
+//				DispatchQueue.main.async {
+//					self.updateView()
+//				}
+//			case .failure(let error):
+//				print(SizesAndStrings.strings.errorfetching, error.localizedDescription)
+//			}
+//		}
+//	}
+//
+//
+//	public func updateView() {
+//		cityNameView.text = weatherData.name
+//		//weatherDescribtionLabel.text = DataSource.weatherIDs[weatherData.weather[0].id]
+//
+//		let tempInFahrenheit = weatherData.main.temp
+//		let tempInCelsius = Int(tempInFahrenheit -  SizesAndStrings.farenheitTemp)
+//		tempertureLabel.text = "\(tempInCelsius)" + SizesAndStrings.strings.celcies
+//		activityIndicator.stopAnimating()
+//	}
+//}

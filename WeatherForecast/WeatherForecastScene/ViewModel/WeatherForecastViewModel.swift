@@ -44,7 +44,13 @@ final class WeatherForecastViewModel {
 		}
 	}
 
-	private func mapToDisplayModel(from data: ForecastWeatherModel) -> WeatherForecastDisplayModel {
+	private func mapToDisplayModel(from data: ForecastWeatherResponse) -> WeatherForecastDisplayModel {
 		// Преобразование в UI-friendly модель
+		let weatherForecastDisplayModel = WeatherForecastDisplayModel()
+		return weatherForecastDisplayModel
 	}
+}
+
+struct WeatherForecastDisplayModel {
+	
 }
