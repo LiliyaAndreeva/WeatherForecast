@@ -55,6 +55,7 @@ public final class NetworkManager: NetworkManagerProtocol{
 				completion(.success(decodedData))
 			} catch {
 				completion(.failure(error))
+				print(error)
 			}
 		}
 		

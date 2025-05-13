@@ -9,131 +9,167 @@ import UIKit
 import CoreLocation
 
 class WeatherForecastViewController: UIViewController {
-	
 	// MARK: - Dependencies
-	public let locationManager = CLLocationManager()
-	//public var weatherData = WeatherData()
-	public let networkManager = NetworkManager.shared
+	private let viewModel: WeatherForecastViewModelProtocol
+	private let forecastView = WeatherForecastView()
+
+	init(viewModel: WeatherForecastViewModelProtocol) {
+		self.viewModel = viewModel
+		super.init(nibName: nil, bundle: nil)
+	}
+
+	required init?(coder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+
+//	// MARK: - Private properties
+//	private lazy var backgroundImageView: UIImageView = setupBackgroundImageView()
+//	private lazy var cityNameView: UILabel = setupCityNameLabel()
+//	private lazy var tempertureLabel: UILabel = setupTempertureLabel()
+//	private lazy var weatherDescribtionLabel: UILabel = setupweatherDescribtionLabel()
+//	private lazy var activityIndicator: UIActivityIndicatorView = setupActivityIndicator()
 	
-	// MARK: - Private properties
-	private lazy var backgroundImageView: UIImageView = setupBackgroundImageView()
-	private lazy var cityNameView: UILabel = setupCityNameLabel()
-	private lazy var tempertureLabel: UILabel = setupTempertureLabel()
-	private lazy var weatherDescribtionLabel: UILabel = setupweatherDescribtionLabel()
-	private lazy var activityIndicator: UIActivityIndicatorView = setupActivityIndicator()
+	override func loadView() {
+		view = forecastView
+	}
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		view.backgroundColor = .purple
-		setupView()
-		//startLocationManager()
+		bindViewModel()
+		forecastView.activityIndicator.startAnimating()
+		viewModel.loadWeather()
 	}
 
 
 }
 
-// MARK: - Settings View
-extension WeatherForecastViewController {
-	func setupView(){
-		addSubView()
-		setupLayout()
-		showActivityIndicator()
-	}
-}
+private extension WeatherForecastViewController {
+	func bindViewModel() {
+		viewModel.onDataUpdate = { [weak self] model in
+			DispatchQueue.main.async {
+				self?.forecastView.cityNameLabel.text = model.cityName
+				self?.forecastView.temperatureLabel.text = model.currentTemp
+				self?.forecastView.weatherDescribtionLabel.text = model.conditionDescription
 
-// MARK: - Settings
-extension WeatherForecastViewController {
-	func addSubView(){
-		[
-			backgroundImageView,
-			cityNameView,
-			tempertureLabel,
-			weatherDescribtionLabel,
-			activityIndicator
-		].forEach { subViews in
-			view.addSubview(subViews)
-		}
-	}
+				if let url = model.conditionIconURL {
+					// Можно подключить библиотеку вроде SDWebImage или использовать простую загрузку
+				}
 
-	func setupBackgroundImageView() -> UIImageView {
-		let backgroundImageView = UIImageView()
-		backgroundImageView.frame = view.bounds
-		backgroundImageView.contentMode = .scaleAspectFill
-		backgroundImageView.clipsToBounds = true
-		backgroundImageView.image = UIImage(named: SizesAndStrings.strings.imageName)
-		//backgroundImageView.image = UIImage(named: SizesAndStrings.strings.imageName, in: Bundle.module, compatibleWith: nil)
-		return backgroundImageView
-	}
-
-	func setupCityNameLabel() -> UILabel {
-		let cityLabel = UILabel()
-		cityLabel.textColor = .white
-		cityLabel.font = .systemFont(ofSize: SizesAndStrings.fontSizes.double, weight: .bold)
-		return cityLabel
-	}
-
-	func setupTempertureLabel() -> UILabel {
-		let tempertureLabel = UILabel()
-		tempertureLabel.textColor = .white
-		tempertureLabel.font = .systemFont(ofSize: SizesAndStrings.fontSizes.normal, weight: .bold)
-		return tempertureLabel
-	}
-
-	func setupweatherDescribtionLabel() -> UILabel {
-		let weatherDescribtionLabel = UILabel()
-		weatherDescribtionLabel.textColor = .white
-		weatherDescribtionLabel.font = .systemFont(ofSize: SizesAndStrings.fontSizes.normal, weight: .bold)
-		return weatherDescribtionLabel
-	}
-
-	func setupActivityIndicator() -> UIActivityIndicatorView {
-		let indicator = UIActivityIndicatorView()
-		indicator.color = .white
-		indicator.hidesWhenStopped = true
-		return indicator
-	}
-
-	func showActivityIndicator() {
-		activityIndicator.startAnimating()
-	}
-}
-
-// MARK: - Layout
-extension WeatherForecastViewController {
-	func setupLayout() {
-
-		[cityNameView, tempertureLabel, weatherDescribtionLabel, activityIndicator ].forEach { view in
-			view.translatesAutoresizingMaskIntoConstraints = false
+				self?.forecastView.activityIndicator.stopAnimating()
+			}
 		}
 
-		NSLayoutConstraint.activate(
-			[
-				cityNameView.topAnchor.constraint(equalTo: view.topAnchor, constant: thirdOfTheScreenWidth),
-				cityNameView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-				activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-				activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-				tempertureLabel.topAnchor.constraint(
-					equalTo: cityNameView.bottomAnchor,
-					constant: distance
-				),
-				tempertureLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-				weatherDescribtionLabel.topAnchor.constraint(
-					equalTo: tempertureLabel.bottomAnchor,
-					constant: distance
-				),
-				weatherDescribtionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
-			]
-		)
-	}
-	
-	var thirdOfTheScreenWidth: Double {
-		return view.frame.width / 3.0
-	}
-	
-	var distance: Double {
-		return view.frame.width * 0.2
+		viewModel.onError = { [weak self] error in
+			DispatchQueue.main.async {
+				self?.forecastView.activityIndicator.stopAnimating()
+				// показать алерт и т.д.
+			}
+		}
 	}
 }
+
+//// MARK: - Settings View
+//extension WeatherForecastViewController {
+//	func setupView(){
+//		addSubView()
+//		setupLayout()
+//		showActivityIndicator()
+//	}
+//}
+//
+//// MARK: - Settings
+//extension WeatherForecastViewController {
+//	func addSubView(){
+//		[
+//			backgroundImageView,
+//			cityNameView,
+//			tempertureLabel,
+//			weatherDescribtionLabel,
+//			activityIndicator
+//		].forEach { subViews in
+//			view.addSubview(subViews)
+//		}
+//	}
+//
+//	func setupBackgroundImageView() -> UIImageView {
+//		let backgroundImageView = UIImageView()
+//		backgroundImageView.frame = view.bounds
+//		backgroundImageView.contentMode = .scaleAspectFill
+//		backgroundImageView.clipsToBounds = true
+//		backgroundImageView.image = UIImage(named: SizesAndStrings.strings.imageName)
+//		//backgroundImageView.image = UIImage(named: SizesAndStrings.strings.imageName, in: Bundle.module, compatibleWith: nil)
+//		return backgroundImageView
+//	}
+//
+//	func setupCityNameLabel() -> UILabel {
+//		let cityLabel = UILabel()
+//		cityLabel.textColor = .white
+//		cityLabel.font = .systemFont(ofSize: SizesAndStrings.fontSizes.double, weight: .bold)
+//		return cityLabel
+//	}
+//
+//	func setupTempertureLabel() -> UILabel {
+//		let tempertureLabel = UILabel()
+//		tempertureLabel.textColor = .white
+//		tempertureLabel.font = .systemFont(ofSize: SizesAndStrings.fontSizes.normal, weight: .bold)
+//		return tempertureLabel
+//	}
+//
+//	func setupweatherDescribtionLabel() -> UILabel {
+//		let weatherDescribtionLabel = UILabel()
+//		weatherDescribtionLabel.textColor = .white
+//		weatherDescribtionLabel.font = .systemFont(ofSize: SizesAndStrings.fontSizes.normal, weight: .bold)
+//		return weatherDescribtionLabel
+//	}
+//
+//	func setupActivityIndicator() -> UIActivityIndicatorView {
+//		let indicator = UIActivityIndicatorView()
+//		indicator.color = .white
+//		indicator.hidesWhenStopped = true
+//		return indicator
+//	}
+//
+//	func showActivityIndicator() {
+//		activityIndicator.startAnimating()
+//	}
+//}
+//
+//// MARK: - Layout
+//extension WeatherForecastViewController {
+//	func setupLayout() {
+//
+//		[cityNameView, tempertureLabel, weatherDescribtionLabel, activityIndicator ].forEach { view in
+//			view.translatesAutoresizingMaskIntoConstraints = false
+//		}
+//
+//		NSLayoutConstraint.activate(
+//			[
+//				cityNameView.topAnchor.constraint(equalTo: view.topAnchor, constant: thirdOfTheScreenWidth),
+//				cityNameView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+//				activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+//				activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+//				tempertureLabel.topAnchor.constraint(
+//					equalTo: cityNameView.bottomAnchor,
+//					constant: distance
+//				),
+//				tempertureLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+//				weatherDescribtionLabel.topAnchor.constraint(
+//					equalTo: tempertureLabel.bottomAnchor,
+//					constant: distance
+//				),
+//				weatherDescribtionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+//			]
+//		)
+//	}
+//	
+//	var thirdOfTheScreenWidth: Double {
+//		return view.frame.width / 3.0
+//	}
+//	
+//	var distance: Double {
+//		return view.frame.width * 0.2
+//	}
+//}
 
 
 // MARK: - CLLocationManagerDelegate
