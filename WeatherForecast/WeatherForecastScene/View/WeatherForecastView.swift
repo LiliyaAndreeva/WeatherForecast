@@ -46,6 +46,20 @@ final class WeatherForecastView: UIView {
 		return indicator
 	} ()
 	
+	let hourlyCollectionView: UICollectionView = {
+		let layout = UICollectionViewFlowLayout()
+		layout.scrollDirection = .horizontal
+		layout.minimumLineSpacing = 12
+		layout.minimumInteritemSpacing = 12
+		layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+		layout.itemSize = CGSize(width: 60, height: 100)
+
+		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+		collectionView.showsHorizontalScrollIndicator = false
+		collectionView.backgroundColor = .clear
+		return collectionView
+	}()
+	
 	override init(frame: CGRect) {
 			super.init(frame: frame)
 			setupView()
@@ -66,12 +80,20 @@ private extension WeatherForecastView {
 		addSubview(temperatureLabel)
 		addSubview(weatherDescribtionLabel)
 		addSubview(activityIndicator)
+		addSubview(hourlyCollectionView)
 
 		backgroundImageView.frame = bounds
 	}
 
 	private func setupLayout() {
-		[backgroundImageView, cityNameLabel, temperatureLabel, weatherDescribtionLabel, activityIndicator].forEach {
+		[
+			backgroundImageView,
+			cityNameLabel,
+			temperatureLabel,
+			weatherDescribtionLabel,
+			activityIndicator,
+			hourlyCollectionView
+		].forEach {
 			$0.translatesAutoresizingMaskIntoConstraints = false
 		}
 		let screenWidth = UIScreen.main.bounds.width
@@ -93,6 +115,11 @@ private extension WeatherForecastView {
 			
 			weatherDescribtionLabel.topAnchor.constraint(equalTo: temperatureLabel.bottomAnchor, constant: distance),
 			weatherDescribtionLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+			
+			hourlyCollectionView.topAnchor.constraint(equalTo: weatherDescribtionLabel.bottomAnchor, constant: 24),
+			hourlyCollectionView.leadingAnchor.constraint(equalTo: leadingAnchor),
+			hourlyCollectionView.trailingAnchor.constraint(equalTo: trailingAnchor),
+			hourlyCollectionView.heightAnchor.constraint(equalToConstant: 100),
 			
 			activityIndicator.centerXAnchor.constraint(equalTo: centerXAnchor),
 			activityIndicator.centerYAnchor.constraint(equalTo: centerYAnchor)

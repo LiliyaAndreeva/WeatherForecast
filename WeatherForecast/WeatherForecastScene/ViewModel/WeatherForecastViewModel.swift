@@ -18,8 +18,10 @@ final class WeatherForecastViewModel: WeatherForecastViewModelProtocol {
 
 	private let weatherService: WeatherServiceProtocol
 	private let locationService: LocationServiceProtocol
-
+	
+	var hourlyWeather: [WeatherForecastDisplayModel.HourlyForecast] = []
 	var onDataUpdate: ((WeatherForecastDisplayModel) -> Void)?
+	var onHourlyUpdate: (() -> Void)?
 	var onError: ((Error) -> Void)?
 
 	init(weatherService: WeatherServiceProtocol, locationService: LocationServiceProtocol) {
@@ -40,6 +42,9 @@ final class WeatherForecastViewModel: WeatherForecastViewModelProtocol {
 						case .success(let data):
 							let displayModel = self?.mapToDisplayModel(from: data)
 							self?.onDataUpdate?(displayModel!)
+							
+							self?.hourlyWeather = displayModel!.hourlyForecasts
+							self?.onHourlyUpdate?()
 						case .failure(let error):
 							self?.onError?(error)
 						}

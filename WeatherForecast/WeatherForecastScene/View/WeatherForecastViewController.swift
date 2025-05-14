@@ -12,7 +12,8 @@ class WeatherForecastViewController: UIViewController {
 	// MARK: - Dependencies
 	private let viewModel: WeatherForecastViewModelProtocol
 	private let forecastView = WeatherForecastView()
-
+	private var hourlyForecasts: [WeatherForecastDisplayModel.HourlyForecast] = []
+	
 	init(viewModel: WeatherForecastViewModelProtocol) {
 		self.viewModel = viewModel
 		super.init(nibName: nil, bundle: nil)
@@ -22,7 +23,7 @@ class WeatherForecastViewController: UIViewController {
 		fatalError("init(coder:) has not been implemented")
 	}
 
-	// MARK: - Lifecircle
+	// MARK: - LifeСircle
 	
 	override func loadView() {
 		view = forecastView
@@ -33,6 +34,8 @@ class WeatherForecastViewController: UIViewController {
 		bindViewModel()
 		forecastView.activityIndicator.startAnimating()
 		viewModel.loadWeather()
+		setupCollctionView()
+		
 	}
 
 
@@ -45,7 +48,8 @@ private extension WeatherForecastViewController {
 				self?.forecastView.cityNameLabel.text = model.cityName
 				self?.forecastView.temperatureLabel.text = model.currentTemp
 				self?.forecastView.weatherDescribtionLabel.text = model.conditionDescription
-
+				self?.hourlyForecasts = model.hourlyForecasts
+				self?.forecastView.hourlyCollectionView.reloadData()
 				if let url = model.conditionIconURL {
 					// Можно подключить библиотеку вроде SDWebImage или использовать простую загрузку
 				}
@@ -61,6 +65,37 @@ private extension WeatherForecastViewController {
 			}
 		}
 	}
+	
+	func setupCollctionView() {
+		forecastView.hourlyCollectionView.dataSource = self
+		forecastView.hourlyCollectionView.delegate = self
+		forecastView.hourlyCollectionView.register(HourlyWeatherCell.self, forCellWithReuseIdentifier: HourlyWeatherCell.reuseIdentifier)
+	}
 }
 
+
+extension WeatherForecastViewController: UICollectionViewDataSource {
+	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+		return hourlyForecasts.count
+	}
+	
+	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+		guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HourlyWeatherCell.reuseIdentifier, for: indexPath) as? HourlyWeatherCell else {
+					return UICollectionViewCell()
+				}
+		
+		let forecastItem = hourlyForecasts[indexPath.item]
+		cell.configure(
+			time: forecastItem.time,
+			temp: forecastItem.temperature,
+			icon: UIImage(systemName: "star")
+		)
+		return cell
+	}
+	
+	
+}
+extension WeatherForecastViewController: UICollectionViewDelegate {
+	
+}
 
