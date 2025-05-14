@@ -56,7 +56,7 @@ final class WeatherForecastViewModel: WeatherForecastViewModelProtocol {
 private extension WeatherForecastViewModel {
 	private func mapToDisplayModel(from data: ForecastWeatherResponse) -> WeatherForecastDisplayModel {
 		let cityName = data.location.name
-		let currentTemperture = "\(Int(data.current.tempC))"
+		let currentTemperture = "\(Int(data.current.tempC)) C"
 		let conditionDescribtion = data.current.condition.text
 		let conditionIconURl = URL(string: "https: \(data.current.condition.icon)")
 		let dailyForecasts = mapDailyForecasts(data.forecast.forecastday)

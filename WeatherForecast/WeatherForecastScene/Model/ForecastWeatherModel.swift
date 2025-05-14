@@ -52,9 +52,9 @@ struct Day: Codable {
 	let avgvisMiles: Double
 	let avghumidity: Double
 	let dailyWillItRain: Int
-	let dailyChanceOfRain: String
+	let dailyChanceOfRain: Int
 	let dailyWillItSnow: Int
-	let dailyChanceOfSnow: String
+	let dailyChanceOfSnow: Int
 	let condition: Condition
 	let uv: Double
 
@@ -88,7 +88,7 @@ struct Astro: Codable {
 	let moonrise: String
 	let moonset: String
 	let moonPhase: String
-	let moonIllumination: String
+	let moonIllumination: Int
 
 	enum CodingKeys: String, CodingKey {
 		case sunrise, sunset, moonrise, moonset
@@ -124,9 +124,9 @@ struct HourlyForecast: Codable {
 	let dewpointC: Double
 	let dewpointF: Double
 	let willItRain: Int
-	let chanceOfRain: String
+	let chanceOfRain: Int
 	let willItSnow: Int
-	let chanceOfSnow: String
+	let chanceOfSnow: Int
 	let visKm: Double
 	let visMiles: Double
 	let gustMph: Double

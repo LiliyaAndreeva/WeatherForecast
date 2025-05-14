@@ -21,12 +21,12 @@ final class WeatherService: WeatherServiceProtocol {
 	}
 	
 	func fetchForecast(latitude: Double, longitude: Double, completion: @escaping (Result<ForecastWeatherResponse, any Error>) -> Void) {
-		let url = APIEndpoint.current(lat: latitude, lon: longitude).url
+		let url = APIEndpoint.forecast(lat: latitude, lon: longitude).url
 		networkManager.fetchData(url: url, completion: completion)
 	}
 	
 	func fetchCurrentWeather(latitude: Double, longitude: Double, completion: @escaping (Result<CurrentWeatherResponse, any Error>) -> Void) {
-		let url = APIEndpoint.forecast(lat: latitude, lon: longitude).url
+		let url = APIEndpoint.current(lat: latitude, lon: longitude).url
 		networkManager.fetchData(url: url, completion: completion)
 	}
 
