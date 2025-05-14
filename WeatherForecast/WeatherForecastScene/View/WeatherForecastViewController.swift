@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import CoreLocation
+import Kingfisher
 
 class WeatherForecastViewController: UIViewController {
 	// MARK: - Dependencies
@@ -50,6 +50,8 @@ private extension WeatherForecastViewController {
 				self?.forecastView.weatherDescribtionLabel.text = model.conditionDescription
 				self?.hourlyForecasts = model.hourlyForecasts
 				self?.forecastView.hourlyCollectionView.reloadData()
+				
+				self?.forecastView.hourlyCollectionView.isHidden = false
 				if let url = model.conditionIconURL {
 					// Можно подключить библиотеку вроде SDWebImage или использовать простую загрузку
 				}
@@ -87,9 +89,13 @@ extension WeatherForecastViewController: UICollectionViewDataSource {
 		let forecastItem = hourlyForecasts[indexPath.item]
 		cell.configure(
 			time: forecastItem.time,
-			temp: forecastItem.temperature,
-			icon: UIImage(systemName: "star")
+			temp: forecastItem.temperature
+			//icon: UIImage(systemName: "star")
 		)
+		
+		if let url = forecastItem.iconURL {
+				cell.iconImageView.kf.setImage(with: url)
+			}
 		return cell
 	}
 	

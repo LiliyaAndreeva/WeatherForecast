@@ -7,7 +7,14 @@
 
 import Foundation
 enum SizesAndStrings {
-	static let farenheitTemp = 273.0
+	static let iconSize: CGFloat = 24
+	static let cornerRadius: CGFloat = 15
+	
+	enum Paddings {
+		static let horizontalInset: CGFloat = 16
+	}
+	
+	
 	
 	enum fontSizes {
 		static let normal: CGFloat = 32

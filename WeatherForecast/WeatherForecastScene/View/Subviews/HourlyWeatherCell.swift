@@ -10,8 +10,8 @@ final class HourlyWeatherCell: UICollectionViewCell {
 	static let reuseIdentifier = "HourlyWeatherCell"
 
 	private let timeLabel = UILabel()
-	private let iconImageView = UIImageView()
 	private let tempLabel = UILabel()
+	let iconImageView = UIImageView()
 
 	override init(frame: CGRect) {
 		super.init(frame: frame)
@@ -49,9 +49,9 @@ final class HourlyWeatherCell: UICollectionViewCell {
 		])
 	}
 
-	func configure(time: String, temp: String, icon: UIImage?) {
+	func configure(time: String, temp: String/*, icon: UIImage?*/) {
 		timeLabel.text = time
 		tempLabel.text = temp
-		iconImageView.image = icon
+		//iconImageView.image = icon
 	}
 }

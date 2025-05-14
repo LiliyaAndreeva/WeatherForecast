@@ -11,7 +11,6 @@ final class WeatherForecastView: UIView {
 	
 	let backgroundImageView: UIImageView = {
 		let backgroundImageView = UIImageView()
-		//backgroundImageView.frame = view.bounds
 		backgroundImageView.contentMode = .scaleAspectFill
 		backgroundImageView.clipsToBounds = true
 		backgroundImageView.image = UIImage(named: SizesAndStrings.strings.imageName)
@@ -56,7 +55,8 @@ final class WeatherForecastView: UIView {
 
 		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
 		collectionView.showsHorizontalScrollIndicator = false
-		collectionView.backgroundColor = .clear
+		collectionView.backgroundColor = #colorLiteral(red: 0.08548969775, green: 0.3861692548, blue: 0.7213394046, alpha: 1).withAlphaComponent(0.5)
+		collectionView.layer.cornerRadius = 15
 		return collectionView
 	}()
 	
@@ -64,13 +64,12 @@ final class WeatherForecastView: UIView {
 			super.init(frame: frame)
 			setupView()
 			setupLayout()
+		hourlyCollectionView.isHidden = true
 		}
-
-		required init?(coder: NSCoder) {
-			super.init(coder: coder)
-			setupView()
-			setupLayout()
-		}
+	
+	required init?(coder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
 }
 
 private extension WeatherForecastView {
@@ -100,29 +99,38 @@ private extension WeatherForecastView {
 		let thirdOfScreenWidth = screenWidth / 3
 		let distance = screenWidth * 0.2
 
-		NSLayoutConstraint.activate([
-			
-			backgroundImageView.topAnchor.constraint(equalTo: topAnchor),
-			backgroundImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
-			backgroundImageView.trailingAnchor.constraint(equalTo: trailingAnchor),
-			backgroundImageView.bottomAnchor.constraint(equalTo: bottomAnchor),
-			
-			cityNameLabel.topAnchor.constraint(equalTo: topAnchor, constant: thirdOfScreenWidth),
-			cityNameLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-			
-			temperatureLabel.topAnchor.constraint(equalTo: cityNameLabel.bottomAnchor, constant: distance),
-			temperatureLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-			
-			weatherDescribtionLabel.topAnchor.constraint(equalTo: temperatureLabel.bottomAnchor, constant: distance),
-			weatherDescribtionLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-			
-			hourlyCollectionView.topAnchor.constraint(equalTo: weatherDescribtionLabel.bottomAnchor, constant: 24),
-			hourlyCollectionView.leadingAnchor.constraint(equalTo: leadingAnchor),
-			hourlyCollectionView.trailingAnchor.constraint(equalTo: trailingAnchor),
-			hourlyCollectionView.heightAnchor.constraint(equalToConstant: 100),
-			
-			activityIndicator.centerXAnchor.constraint(equalTo: centerXAnchor),
-			activityIndicator.centerYAnchor.constraint(equalTo: centerYAnchor)
-		])
+		NSLayoutConstraint.activate(
+			[
+				
+				backgroundImageView.topAnchor.constraint(equalTo: topAnchor),
+				backgroundImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
+				backgroundImageView.trailingAnchor.constraint(equalTo: trailingAnchor),
+				backgroundImageView.bottomAnchor.constraint(equalTo: bottomAnchor),
+				
+				cityNameLabel.topAnchor.constraint(equalTo: topAnchor, constant: thirdOfScreenWidth),
+				cityNameLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+				
+				temperatureLabel.topAnchor.constraint(equalTo: cityNameLabel.bottomAnchor, constant: distance),
+				temperatureLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+				
+				weatherDescribtionLabel.topAnchor.constraint(equalTo: temperatureLabel.bottomAnchor, constant: distance),
+				weatherDescribtionLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+				
+				hourlyCollectionView.topAnchor.constraint(
+					equalTo: weatherDescribtionLabel.bottomAnchor,
+					constant: SizesAndStrings.iconSize
+				),
+				hourlyCollectionView.leadingAnchor.constraint(
+					equalTo: leadingAnchor,
+					constant: SizesAndStrings.Paddings.horizontalInset
+				),
+				hourlyCollectionView.trailingAnchor
+					.constraint(equalTo: trailingAnchor, constant: -SizesAndStrings.Paddings.horizontalInset),
+				hourlyCollectionView.heightAnchor.constraint(equalToConstant: thirdOfScreenWidth),
+				
+				activityIndicator.centerXAnchor.constraint(equalTo: centerXAnchor),
+				activityIndicator.centerYAnchor.constraint(equalTo: centerYAnchor)
+			]
+		)
 	}
 }
