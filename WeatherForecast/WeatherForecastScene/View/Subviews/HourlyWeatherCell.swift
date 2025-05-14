@@ -23,14 +23,14 @@ final class HourlyWeatherCell: UICollectionViewCell {
 	}
 
 	private func setup() {
-		timeLabel.font = .systemFont(ofSize: 14)
+		timeLabel.font = .systemFont(ofSize: 18)
 		timeLabel.textColor = .white
 		timeLabel.textAlignment = .center
 
 		iconImageView.contentMode = .scaleAspectFit
 		iconImageView.tintColor = .white
 
-		tempLabel.font = .systemFont(ofSize: 14)
+		tempLabel.font = .systemFont(ofSize: 18)
 		tempLabel.textColor = .white
 		tempLabel.textAlignment = .center
 
@@ -52,6 +52,9 @@ final class HourlyWeatherCell: UICollectionViewCell {
 	func configure(time: String, temp: String/*, icon: UIImage?*/) {
 		timeLabel.text = time
 		tempLabel.text = temp
-		//iconImageView.image = icon
+	}
+	func configure(with model: WeatherForecastDisplayModel.HourlyForecast) {
+		timeLabel.text = model.time
+		tempLabel.text = model.temperature
 	}
 }

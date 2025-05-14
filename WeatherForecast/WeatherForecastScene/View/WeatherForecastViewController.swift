@@ -13,6 +13,7 @@ class WeatherForecastViewController: UIViewController {
 	private let viewModel: WeatherForecastViewModelProtocol
 	private let forecastView = WeatherForecastView()
 	private var hourlyForecasts: [WeatherForecastDisplayModel.HourlyForecast] = []
+	private var dailyForecasts: [WeatherForecastDisplayModel.DailyForecast] = []
 	
 	init(viewModel: WeatherForecastViewModelProtocol) {
 		self.viewModel = viewModel
@@ -35,6 +36,7 @@ class WeatherForecastViewController: UIViewController {
 		forecastView.activityIndicator.startAnimating()
 		viewModel.loadWeather()
 		setupCollctionView()
+		setupVerticalCollectionView()
 		
 	}
 
@@ -45,17 +47,21 @@ private extension WeatherForecastViewController {
 	func bindViewModel() {
 		viewModel.onDataUpdate = { [weak self] model in
 			DispatchQueue.main.async {
-				sleep(3)
 				self?.forecastView.cityNameLabel.text = model.cityName
 				self?.forecastView.temperatureLabel.text = model.currentTemp
 				self?.forecastView.weatherDescribtionLabel.text = model.conditionDescription
 				self?.hourlyForecasts = model.hourlyForecasts
 				self?.forecastView.hourlyCollectionView.reloadData()
 				
+				self?.dailyForecasts = model.dailyForecasts
+				self?.forecastView.dailyCollectionView.reloadData()
+				
 				self?.forecastView.hourlyCollectionView.isHidden = false
 				self?.forecastView.dailyCollectionView.isHidden = false
+				
+				
 				if let url = model.conditionIconURL {
-					// Можно подключить библиотеку вроде SDWebImage или использовать простую загрузку
+					//forecastView.weatherDescribtionLabel.
 				}
 
 				self?.forecastView.activityIndicator.stopAnimating()
@@ -65,43 +71,76 @@ private extension WeatherForecastViewController {
 		viewModel.onError = { [weak self] error in
 			DispatchQueue.main.async {
 				self?.forecastView.activityIndicator.stopAnimating()
-				// показать алерт и т.д.
+				let alert = UIAlertController(
+							title: "Ошибка",
+							message: error.localizedDescription,
+							preferredStyle: .alert
+						)
+				alert.addAction(UIAlertAction(title: "OK", style: .default))
+				self?.present(alert, animated: true)
 			}
 		}
+	}
+	
+	func setupVerticalCollectionView() {
+		forecastView.dailyCollectionView.dataSource = self
+		forecastView.dailyCollectionView.delegate = self
+		forecastView.dailyCollectionView.register(
+			WeatherForecastCell.self,
+			forCellWithReuseIdentifier: WeatherForecastCell.reuseIdentifier
+		)
 	}
 	
 	func setupCollctionView() {
 		forecastView.hourlyCollectionView.dataSource = self
 		forecastView.hourlyCollectionView.delegate = self
-		forecastView.hourlyCollectionView.register(HourlyWeatherCell.self, forCellWithReuseIdentifier: HourlyWeatherCell.reuseIdentifier)
+		forecastView.hourlyCollectionView.register(
+			HourlyWeatherCell.self,
+			forCellWithReuseIdentifier: HourlyWeatherCell.reuseIdentifier
+		)
 	}
 }
 
 
 extension WeatherForecastViewController: UICollectionViewDataSource {
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		return hourlyForecasts.count
+		if collectionView == forecastView.hourlyCollectionView {
+			return hourlyForecasts.count
+		} else if collectionView == forecastView.dailyCollectionView {
+			return dailyForecasts.count
+		}
+		return 0
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-		guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HourlyWeatherCell.reuseIdentifier, for: indexPath) as? HourlyWeatherCell else {
-					return UICollectionViewCell()
-				}
-		
-		let forecastItem = hourlyForecasts[indexPath.item]
-		cell.configure(
-			time: forecastItem.time,
-			temp: forecastItem.temperature
-			//icon: UIImage(systemName: "star")
-		)
-		
-		if let url = forecastItem.iconURL {
+		if collectionView == forecastView.hourlyCollectionView {
+			guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HourlyWeatherCell.reuseIdentifier, for: indexPath) as? HourlyWeatherCell else {
+				return UICollectionViewCell()
+			}
+			
+			let forecastItem = hourlyForecasts[indexPath.item]
+			cell.configure(with: forecastItem)
+			
+			if let url = forecastItem.iconURL {
 				cell.iconImageView.kf.setImage(with: url)
 			}
-		return cell
+			return cell
+		} else if collectionView == forecastView.dailyCollectionView {
+			guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: WeatherForecastCell.reuseIdentifier, for: indexPath) as? WeatherForecastCell else {
+				return UICollectionViewCell()
+			}
+			
+			let forecastItem = dailyForecasts[indexPath.item]
+			cell.configure(with: forecastItem)
+			if let url = forecastItem.iconURL {
+				cell.weatherIconImageView.kf.setImage(with: url)
+			}
+			
+			return cell
+		}
+		
+		return UICollectionViewCell()
 	}
-	
-	
 }
 extension WeatherForecastViewController: UICollectionViewDelegate {
 	

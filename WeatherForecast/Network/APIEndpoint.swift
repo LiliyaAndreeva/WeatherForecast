@@ -16,7 +16,7 @@ enum APIEndpoint {
 		case .current(let lat, let lon):
 			return URL(string: "https://api.weatherapi.com/v1/current.json?key=\(key)&q=\(lat),\(lon)")!
 		case .forecast(let lat, let lon):
-			return URL(string: "https://api.weatherapi.com/v1/forecast.json?key=\(key)&q=\(lat),\(lon)&days=7")!
+			return URL(string: "https://api.weatherapi.com/v1/forecast.json?key=\(key)&q=\(lat),\(lon)&days=7&lang=ru")!
 		}
 	}
 }

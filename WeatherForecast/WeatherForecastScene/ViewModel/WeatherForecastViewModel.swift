@@ -10,7 +10,6 @@ import Foundation
 protocol WeatherForecastViewModelProtocol: AnyObject {
 	var onDataUpdate: ((WeatherForecastDisplayModel) -> Void)? { get set }
 	var onError: ((Error) -> Void)? { get set }
-	
 	func loadWeather()
 }
 
@@ -18,11 +17,15 @@ final class WeatherForecastViewModel: WeatherForecastViewModelProtocol {
 
 	private let weatherService: WeatherServiceProtocol
 	private let locationService: LocationServiceProtocol
-	
+
 	var hourlyWeather: [WeatherForecastDisplayModel.HourlyForecast] = []
-	var onDataUpdate: ((WeatherForecastDisplayModel) -> Void)?
+	var dailyWeather: [WeatherForecastDisplayModel.DailyForecast] = []
 	var onHourlyUpdate: (() -> Void)?
+	var onDailyUpdate: (() -> Void)?
+	var onDataUpdate: ((WeatherForecastDisplayModel) -> Void)?
 	var onError: ((Error) -> Void)?
+	
+	
 
 	init(weatherService: WeatherServiceProtocol, locationService: LocationServiceProtocol) {
 		self.weatherService = weatherService
@@ -45,6 +48,8 @@ final class WeatherForecastViewModel: WeatherForecastViewModelProtocol {
 							
 							self?.hourlyWeather = displayModel!.hourlyForecasts
 							self?.onHourlyUpdate?()
+							self?.dailyWeather = displayModel!.dailyForecasts
+							self?.onDailyUpdate?()
 						case .failure(let error):
 							self?.onError?(error)
 						}
@@ -60,8 +65,9 @@ final class WeatherForecastViewModel: WeatherForecastViewModelProtocol {
 
 private extension WeatherForecastViewModel {
 	private func mapToDisplayModel(from data: ForecastWeatherResponse) -> WeatherForecastDisplayModel {
+		
 		let cityName = data.location.name
-		let currentTemperture = "\(Int(data.current.tempC)) C"
+		let currentTemperture = "\(Int(data.current.tempC)) C°"
 		let conditionDescribtion = data.current.condition.text
 		let conditionIconURl = URL(string: "https: \(data.current.condition.icon)")
 		let dailyForecasts = mapDailyForecasts(data.forecast.forecastday)
@@ -78,9 +84,11 @@ private extension WeatherForecastViewModel {
 	}
 
 	func mapDailyForecasts(_ days: [ForecastDay]) -> [WeatherForecastDisplayModel.DailyForecast] {
+		let today = Date()
 		return days.map { day in
+			let date = Date(timeIntervalSince1970: TimeInterval(day.dateEpoch))
 			return WeatherForecastDisplayModel.DailyForecast(
-				date: day.date,
+				date: date.formattedDayOfWeek(referenceDate: today),
 				maxTemp: formatTemperature(day.day.maxtempC),
 				minTemp: formatTemperature(day.day.mintempC),
 				iconURL: buildIconURL(from: day.day.condition.icon)

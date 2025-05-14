@@ -42,9 +42,9 @@ public final class NetworkManager: NetworkManagerProtocol{
 			do {
 				let decodedData = try JSONDecoder().decode(T.self, from: data)
 				completion(.success(decodedData))
-				
+
 			} catch {
-				print("❌ Decoding error:", error)
+				
 				completion(.failure(error))
 //				if let decodingError = error as? DecodingError {
 //					switch decodingError {

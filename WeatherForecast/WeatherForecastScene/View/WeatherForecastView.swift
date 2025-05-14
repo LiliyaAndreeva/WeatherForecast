@@ -79,17 +79,19 @@ final class WeatherForecastView: UIView {
 		return collectionView
 	}()
 	
-	let dailyCollectionView: UICollectionView = {
+	
+	let dailyCollectionView: SelfSizingCollectionView = {
 		let layout = UICollectionViewFlowLayout()
 		layout.scrollDirection = .vertical
 		layout.minimumLineSpacing = SizesAndStrings.Paddings.lineSpacing
 		layout.itemSize = CGSize(width: UIScreen.main.bounds.width - 40, height: 50)
+		layout.sectionInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
 		
-		let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+		let collectionView = SelfSizingCollectionView(frame: .zero, collectionViewLayout: layout)
+		collectionView.isScrollEnabled = false
 		collectionView.backgroundColor = #colorLiteral(red: 0.08548969775, green: 0.3861692548, blue: 0.7213394046, alpha: 1).withAlphaComponent(SizesAndStrings.alpha)
 		collectionView.showsVerticalScrollIndicator = false
 		collectionView.layer.cornerRadius = SizesAndStrings.cornerRadius
-		//collectionView.translatesAutoresizingMaskIntoConstraints = false
 		return collectionView
 	}()
 	
@@ -122,15 +124,15 @@ private extension WeatherForecastView {
 		].forEach { contentStackView.addArrangedSubview($0) }
 		
 		[cityNameLabel, temperatureLabel, weatherDescribtionLabel, activityIndicator].forEach {
-			 $0.setContentHuggingPriority(.required, for: .vertical)
-			 $0.setContentCompressionResistancePriority(.required, for: .vertical)
-		 }
+			$0.setContentHuggingPriority(.required, for: .vertical)
+			$0.setContentCompressionResistancePriority(.required, for: .vertical)
+		}
 	}
-
-
+	
+	
 	private func setupLayout() {
 		scrollView.translatesAutoresizingMaskIntoConstraints = false
-
+		
 		let screenWidth = UIScreen.main.bounds.width
 		let thirdOfScreenWidth = screenWidth / 3
 		let fifthOfScreen = screenWidth / 5
@@ -195,11 +197,19 @@ private extension WeatherForecastView {
 					equalTo: contentStackView.trailingAnchor,
 					constant: -SizesAndStrings.Paddings.horizontalInset
 				),
-				dailyCollectionView.heightAnchor.constraint(equalToConstant: 400),
-				
+
 				activityIndicator.centerXAnchor.constraint(equalTo: centerXAnchor),
 				activityIndicator.centerYAnchor.constraint(equalTo: centerYAnchor)
 			]
 		)
 	}
 }
+
+//TODO: добавить иконку текущего состояния погоды
+//TODO: исправить язык? OK
+//TODO: сделать отображение 7 дней
+//TODO: исправить конфликтующие констрейнты
+//TODO: почистить лишние свойства у модели
+//TODO: почистить хардкод
+
+
