@@ -71,13 +71,10 @@ private extension WeatherForecastViewController {
 		viewModel.onError = { [weak self] error in
 			DispatchQueue.main.async {
 				self?.forecastView.activityIndicator.stopAnimating()
-				let alert = UIAlertController(
-							title: "Ошибка",
-							message: error.localizedDescription,
-							preferredStyle: .alert
-						)
-				alert.addAction(UIAlertAction(title: "OK", style: .default))
-				self?.present(alert, animated: true)
+				self?.showRetryAlert(message: error.localizedDescription) {
+					self?.forecastView.activityIndicator.startAnimating()
+					self?.viewModel.loadWeather()
+				}
 			}
 		}
 	}
@@ -98,6 +95,22 @@ private extension WeatherForecastViewController {
 			HourlyWeatherCell.self,
 			forCellWithReuseIdentifier: HourlyWeatherCell.reuseIdentifier
 		)
+	}
+	
+	func showRetryAlert(message: String, retryAction: @escaping () -> Void) {
+		let alert = UIAlertController(
+			title: "Ошибка",
+			message: message,
+			preferredStyle: .alert
+		)
+
+		alert.addAction(UIAlertAction(title: "Отмена", style: .cancel))
+
+		alert.addAction(UIAlertAction(title: "Повторить", style: .default) { _ in
+			retryAction()
+		})
+
+		present(alert, animated: true)
 	}
 }
 
