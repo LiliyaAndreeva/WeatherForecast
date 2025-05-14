@@ -7,10 +7,12 @@
 
 import Foundation
 enum SizesAndStrings {
+	static let alpha: CGFloat = 0.5
 	static let iconSize: CGFloat = 24
 	static let cornerRadius: CGFloat = 15
 	
 	enum Paddings {
+		static let lineSpacing: CGFloat = 12
 		static let horizontalInset: CGFloat = 16
 	}
 	

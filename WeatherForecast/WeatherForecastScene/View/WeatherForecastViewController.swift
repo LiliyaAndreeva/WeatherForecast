@@ -45,6 +45,7 @@ private extension WeatherForecastViewController {
 	func bindViewModel() {
 		viewModel.onDataUpdate = { [weak self] model in
 			DispatchQueue.main.async {
+				sleep(3)
 				self?.forecastView.cityNameLabel.text = model.cityName
 				self?.forecastView.temperatureLabel.text = model.currentTemp
 				self?.forecastView.weatherDescribtionLabel.text = model.conditionDescription
@@ -52,6 +53,7 @@ private extension WeatherForecastViewController {
 				self?.forecastView.hourlyCollectionView.reloadData()
 				
 				self?.forecastView.hourlyCollectionView.isHidden = false
+				self?.forecastView.dailyCollectionView.isHidden = false
 				if let url = model.conditionIconURL {
 					// Можно подключить библиотеку вроде SDWebImage или использовать простую загрузку
 				}

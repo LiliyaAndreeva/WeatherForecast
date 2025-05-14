@@ -65,7 +65,7 @@ private extension WeatherForecastViewModel {
 		let conditionDescribtion = data.current.condition.text
 		let conditionIconURl = URL(string: "https: \(data.current.condition.icon)")
 		let dailyForecasts = mapDailyForecasts(data.forecast.forecastday)
-		let hourlyForecasts = mapHourlyForecasts(data.forecast.forecastday.first?.hour)
+		let hourlyForecasts = mapHourlyForecasts(data.forecast.forecastday)
 
 		return WeatherForecastDisplayModel(
 			cityName: cityName,
@@ -88,16 +88,33 @@ private extension WeatherForecastViewModel {
 		}
 	}
 
-	func mapHourlyForecasts(_ hours: [HourlyForecast]?) -> [WeatherForecastDisplayModel.HourlyForecast] {
-		guard let hours = hours else { return [] }
-
-		return hours.map { hour in
-			return WeatherForecastDisplayModel.HourlyForecast(
-				time: formatHour(from: hour.time),
-				temperature: formatTemperature(hour.tempC),
-				iconURL: buildIconURL(from: hour.condition.icon)
-			)
+	func mapHourlyForecasts(_ forecastDays: [ForecastDay]) -> [WeatherForecastDisplayModel.HourlyForecast] {
+		let calendar = Calendar.current
+		let now = calendar.date(bySettingHour: Calendar.current.component(.hour, from: Date()), minute: 0, second: 0, of: Date()) ?? Date()
+		var result: [WeatherForecastDisplayModel.HourlyForecast] = []
+		
+		for (index, day) in forecastDays.prefix(2).enumerated() {
+			for hour in day.hour {
+				guard let hourDate = parseHourDate(from: hour.time) else { continue }
+				
+				if index == 0 {
+					if hourDate >= now {
+						result.append(mapHourForecast(hour))
+					}
+				} else {
+					result.append(mapHourForecast(hour))
+				}
+			}
 		}
+		return result
+	}
+	
+	func mapHourForecast(_ hour: HourlyForecast) -> WeatherForecastDisplayModel.HourlyForecast {
+		return WeatherForecastDisplayModel.HourlyForecast(
+			time: formatHour(from: hour.time),
+			temperature: formatTemperature(hour.tempC),
+			iconURL: buildIconURL(from: hour.condition.icon)
+		)
 	}
 
 	func formatHour(from fullTimeString: String) -> String {
@@ -110,7 +127,13 @@ private extension WeatherForecastViewModel {
 		if let date = inputFormatter.date(from: fullTimeString) {
 			return outputFormatter.string(from: date)
 		}
-		return fullTimeString // fallback
+		return fullTimeString 
+	}
+	private func parseHourDate(from string: String) -> Date? {
+		let formatter = DateFormatter()
+		formatter.dateFormat = "yyyy-MM-dd HH:mm"
+		formatter.locale = Locale(identifier: "en_US_POSIX")
+		return formatter.date(from: string)
 	}
 
 	func formatTemperature(_ temp: Double) -> String {
