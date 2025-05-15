@@ -21,7 +21,7 @@ extension Date {
 		formatter.dateFormat = "EE" 
 
 		if calendar.isDate(self, inSameDayAs: referenceDate) {
-			return "Сегодня"
+			return ConstantStrings.today
 		} else {
 			let capitalized = formatter.string(from: self).capitalized
 			return capitalized

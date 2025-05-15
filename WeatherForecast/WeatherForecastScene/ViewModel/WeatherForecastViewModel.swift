@@ -11,6 +11,7 @@ protocol WeatherForecastViewModelProtocol: AnyObject {
 	var onDataUpdate: ((WeatherForecastDisplayModel) -> Void)? { get set }
 	var onError: ((Error) -> Void)? { get set }
 	func loadWeather()
+	func loadWeather2()
 }
 
 final class WeatherForecastViewModel: WeatherForecastViewModelProtocol {
@@ -60,11 +61,93 @@ final class WeatherForecastViewModel: WeatherForecastViewModelProtocol {
 			}
 		}
 	}
+	
+	func loadWeather2() {
+		locationService.requestLocation { [weak self] location in
+			switch location {
+			case .success(let coordinates):
+				let group = DispatchGroup()
+				var forecastData: ForecastWeatherResponse?
+				var currentData: CurrentWeatherResponse?
+				var fetchError: Error?
+				
+				group.enter()
+				self?.weatherService.fetchForecast(
+					latitude: coordinates.latitude,
+					longitude: coordinates.longitude
+				) { result in
+					defer { group.leave() }
+					switch result {
+					case .success(let data):
+						forecastData = data
+					case .failure(let error):
+						fetchError = error
+					}
+				}
+				group.enter()
+				self?.weatherService.fetchCurrentWeather(
+					latitude: coordinates.latitude,
+					longitude: coordinates.longitude
+				) { result in
+					defer { group.leave()}
+					switch result {
+					case .success(let data):
+						currentData = data
+					case .failure(let error):
+						fetchError = error
+					}
+						
+					}
+				
+				group.notify(queue: .main) {
+					guard fetchError == nil else { self?.onError?(fetchError!)
+						return
+					}
+					
+					guard let forecast = forecastData, let current = currentData else { return }
+					
+					let displayModel = self?.mapToDisplayModel(forecast: forecast, current: current)
+					self?.onDataUpdate?(displayModel!)
+					
+					self?.hourlyWeather = displayModel!.hourlyForecasts
+					self?.onHourlyUpdate?()
+					self?.dailyWeather = displayModel!.dailyForecasts
+					self?.onDailyUpdate?()
+				}
+				//)
+				
+			case .failure(let error):
+				self?.onError?(error)
+			}
+			
+		}
+	}
 
 }
 
 private extension WeatherForecastViewModel {
-	private func mapToDisplayModel(from data: ForecastWeatherResponse) -> WeatherForecastDisplayModel {
+	func mapToDisplayModel(forecast: ForecastWeatherResponse, current: CurrentWeatherResponse) -> WeatherForecastDisplayModel {
+		let cityName = current.location.name
+		let currentTemperture = "\(Int(current.current.tempC)) C°"
+		let conditionDescribtion = current.current.condition.text
+		let conditionIconURl = URL(string: "https: \(current.current.condition.icon)")
+		
+		let dailyForecasts = mapDailyForecasts(forecast.forecast.forecastday)
+		let hourlyForecasts = mapHourlyForecasts(forecast.forecast.forecastday)
+
+		return WeatherForecastDisplayModel(
+			cityName: cityName,
+			currentTemp: currentTemperture,
+			conditionDescription: conditionDescribtion,
+			conditionIconURL: conditionIconURl,
+			dailyForecasts: dailyForecasts,
+			hourlyForecasts: hourlyForecasts
+		)
+	}
+	
+	
+	
+	func mapToDisplayModel(from data: ForecastWeatherResponse) -> WeatherForecastDisplayModel {
 		
 		let cityName = data.location.name
 		let currentTemperture = "\(Int(data.current.tempC)) C°"

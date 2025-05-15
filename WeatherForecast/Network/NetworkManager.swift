@@ -8,7 +8,6 @@
 import Foundation
 
 
-
 public protocol NetworkManagerProtocol {
 	func fetchData<T: Decodable>(url: URL, completion: @escaping (Result<T, Error>) -> Void)
 }
@@ -21,8 +20,7 @@ public final class NetworkManager: NetworkManagerProtocol{
 	
 	public func fetchData<T: Decodable>(url: URL, completion: @escaping (Result<T, Error>) -> Void) {
 		let session = URLSession.shared
-		
-		
+
 		let task = session.dataTask(with: url) { (data, response, error) in
 			guard error == nil else {
 				completion(.failure(error!))
@@ -37,35 +35,13 @@ public final class NetworkManager: NetworkManagerProtocol{
 				}
 				return
 			}
-		
-			
 			do {
 				let decodedData = try JSONDecoder().decode(T.self, from: data)
 				completion(.success(decodedData))
-
 			} catch {
-				
 				completion(.failure(error))
-//				if let decodingError = error as? DecodingError {
-//					switch decodingError {
-//					case .keyNotFound(let key, let context):
-//						print("🔑 Missing key:", key.stringValue)
-//						print("📍 CodingPath:", context.codingPath)
-//					case .typeMismatch(let type, let context):
-//						print("❌ Type mismatch:", type)
-//						print("📍 Context:", context)
-//					case .valueNotFound(let type, let context):
-//						print("❌ Value not found for type:", type)
-//						print("📍 Context:", context)
-//					case .dataCorrupted(let context):
-//						print("❌ Data corrupted:", context)
-//					default:
-//						break
-//					}
-//				}
 			}
 		}
-		
 		task.resume()
 	}
 }

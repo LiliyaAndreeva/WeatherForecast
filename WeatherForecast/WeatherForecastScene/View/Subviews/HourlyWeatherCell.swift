@@ -7,7 +7,7 @@
 
 import UIKit
 final class HourlyWeatherCell: UICollectionViewCell {
-	static let reuseIdentifier = "HourlyWeatherCell"
+	static let reuseIdentifier = ConstantStrings.hourlyWeatherCellReuseIdentifier
 
 	private let timeLabel = UILabel()
 	private let tempLabel = UILabel()
@@ -23,14 +23,14 @@ final class HourlyWeatherCell: UICollectionViewCell {
 	}
 
 	private func setup() {
-		timeLabel.font = .systemFont(ofSize: 18)
+		timeLabel.font = .systemFont(ofSize: Sizes.fontSizes.light)
 		timeLabel.textColor = .white
 		timeLabel.textAlignment = .center
 
 		iconImageView.contentMode = .scaleAspectFit
 		iconImageView.tintColor = .white
 
-		tempLabel.font = .systemFont(ofSize: 18)
+		tempLabel.font = .systemFont(ofSize: Sizes.fontSizes.light)
 		tempLabel.textColor = .white
 		tempLabel.textAlignment = .center
 
@@ -49,7 +49,7 @@ final class HourlyWeatherCell: UICollectionViewCell {
 		])
 	}
 
-	func configure(time: String, temp: String/*, icon: UIImage?*/) {
+	func configure(time: String, temp: String) {
 		timeLabel.text = time
 		tempLabel.text = temp
 	}

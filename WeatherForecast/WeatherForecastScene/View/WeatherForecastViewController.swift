@@ -12,9 +12,12 @@ class WeatherForecastViewController: UIViewController {
 	// MARK: - Dependencies
 	private let viewModel: WeatherForecastViewModelProtocol
 	private let forecastView = WeatherForecastView()
+	
+	// MARK: - Private properties
 	private var hourlyForecasts: [WeatherForecastDisplayModel.HourlyForecast] = []
 	private var dailyForecasts: [WeatherForecastDisplayModel.DailyForecast] = []
-	
+
+	// MARK: - Initialization
 	init(viewModel: WeatherForecastViewModelProtocol) {
 		self.viewModel = viewModel
 		super.init(nibName: nil, bundle: nil)
@@ -24,8 +27,7 @@ class WeatherForecastViewController: UIViewController {
 		fatalError("init(coder:) has not been implemented")
 	}
 
-	// MARK: - LifeСircle
-	
+	// MARK: - Lifecycle
 	override func loadView() {
 		view = forecastView
 	}
@@ -34,37 +36,34 @@ class WeatherForecastViewController: UIViewController {
 		super.viewDidLoad()
 		bindViewModel()
 		forecastView.activityIndicator.startAnimating()
-		viewModel.loadWeather()
+		viewModel.loadWeather2()
 		setupCollctionView()
 		setupVerticalCollectionView()
-		
 	}
-
-
 }
 
+// MARK: - Private extension
 private extension WeatherForecastViewController {
 	func bindViewModel() {
 		viewModel.onDataUpdate = { [weak self] model in
 			DispatchQueue.main.async {
-				self?.forecastView.cityNameLabel.text = model.cityName
-				self?.forecastView.temperatureLabel.text = model.currentTemp
-				self?.forecastView.weatherDescribtionLabel.text = model.conditionDescription
+//				self?.forecastView.cityNameLabel.text = model.cityName
+//				self?.forecastView.temperatureLabel.text = model.currentTemp
+//				self?.forecastView.weatherDescribtionLabel.text = model.conditionDescription
+				self?.update(with: model)
 				self?.hourlyForecasts = model.hourlyForecasts
-				self?.forecastView.hourlyCollectionView.reloadData()
-				
 				self?.dailyForecasts = model.dailyForecasts
+				self?.forecastView.hourlyCollectionView.reloadData()
 				self?.forecastView.dailyCollectionView.reloadData()
 				
-				self?.forecastView.hourlyCollectionView.isHidden = false
-				self?.forecastView.dailyCollectionView.isHidden = false
+//				self?.forecastView.hourlyCollectionView.isHidden = false
+//				self?.forecastView.dailyCollectionView.isHidden = false
 				
 				
 				if let url = model.conditionIconURL {
 					//forecastView.weatherDescribtionLabel.
 				}
-
-				self?.forecastView.activityIndicator.stopAnimating()
+				//self?.forecastView.activityIndicator.stopAnimating()
 			}
 		}
 
@@ -78,43 +77,49 @@ private extension WeatherForecastViewController {
 			}
 		}
 	}
-	
+
 	func setupVerticalCollectionView() {
 		forecastView.dailyCollectionView.dataSource = self
-		forecastView.dailyCollectionView.delegate = self
 		forecastView.dailyCollectionView.register(
 			WeatherForecastCell.self,
 			forCellWithReuseIdentifier: WeatherForecastCell.reuseIdentifier
 		)
 	}
-	
+
 	func setupCollctionView() {
 		forecastView.hourlyCollectionView.dataSource = self
-		forecastView.hourlyCollectionView.delegate = self
 		forecastView.hourlyCollectionView.register(
 			HourlyWeatherCell.self,
 			forCellWithReuseIdentifier: HourlyWeatherCell.reuseIdentifier
 		)
 	}
-	
+
 	func showRetryAlert(message: String, retryAction: @escaping () -> Void) {
 		let alert = UIAlertController(
-			title: "Ошибка",
+			title: ConstantStrings.error,
 			message: message,
 			preferredStyle: .alert
 		)
 
-		alert.addAction(UIAlertAction(title: "Отмена", style: .cancel))
-
-		alert.addAction(UIAlertAction(title: "Повторить", style: .default) { _ in
+		alert.addAction(UIAlertAction(title: ConstantStrings.cancel, style: .cancel))
+		alert.addAction(UIAlertAction(title: ConstantStrings.retry, style: .default) { _ in
 			retryAction()
 		})
 
 		present(alert, animated: true)
 	}
+	
+	func update(with model: WeatherForecastDisplayModel) {
+		forecastView.cityNameLabel.text = model.cityName
+		forecastView.temperatureLabel.text = model.currentTemp
+		forecastView.weatherDescribtionLabel.text = model.conditionDescription
+		forecastView.hourlyCollectionView.isHidden = false
+		forecastView.dailyCollectionView.isHidden = false
+		forecastView.activityIndicator.stopAnimating()
+	}
 }
 
-
+// MARK: - Private UICollectionViewDataSource
 extension WeatherForecastViewController: UICollectionViewDataSource {
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 		if collectionView == forecastView.hourlyCollectionView {
@@ -124,16 +129,16 @@ extension WeatherForecastViewController: UICollectionViewDataSource {
 		}
 		return 0
 	}
-	
+
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		if collectionView == forecastView.hourlyCollectionView {
 			guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HourlyWeatherCell.reuseIdentifier, for: indexPath) as? HourlyWeatherCell else {
 				return UICollectionViewCell()
 			}
-			
+
 			let forecastItem = hourlyForecasts[indexPath.item]
 			cell.configure(with: forecastItem)
-			
+
 			if let url = forecastItem.iconURL {
 				cell.iconImageView.kf.setImage(with: url)
 			}
@@ -148,14 +153,10 @@ extension WeatherForecastViewController: UICollectionViewDataSource {
 			if let url = forecastItem.iconURL {
 				cell.weatherIconImageView.kf.setImage(with: url)
 			}
-			
 			return cell
 		}
-		
 		return UICollectionViewCell()
 	}
 }
-extension WeatherForecastViewController: UICollectionViewDelegate {
-	
-}
+
 

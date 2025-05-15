@@ -3,26 +3,6 @@
 //  WeatherForecast
 //
 //  Created by Лилия Андреева on 13.05.2025.
-//
-
-import Foundation
-//public struct Weather: Codable {
-//	var id: Int
-//	var main: String
-//	var description: String
-//	var icon: String
-//}
-//
-//public struct Main: Codable {
-//	var temp: Double = 0.0
-//}
-//
-//public struct WeatherData: Codable {
-//	var weather: [Weather] = []
-//	var main: Main = Main()
-//	var name: String = ""
-//}
-
 
 import Foundation
 

@@ -29,7 +29,6 @@ final class LocationService: NSObject, CLLocationManagerDelegate, LocationServic
 		if status == .notDetermined {
 			locationManager.requestWhenInUseAuthorization()
 		} else if status == .denied {
-			// Москва как fallback
 			let moscowCoordinate = CLLocationCoordinate2D(latitude: 55.7558, longitude: 37.6173)
 			completion(.success(moscowCoordinate))
 		} else {
