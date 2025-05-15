@@ -11,7 +11,6 @@ protocol WeatherForecastViewModelProtocol: AnyObject {
 	var onDataUpdate: ((WeatherForecastDisplayModel) -> Void)? { get set }
 	var onError: ((Error) -> Void)? { get set }
 	func loadWeather()
-	func loadWeather2()
 }
 
 final class WeatherForecastViewModel: WeatherForecastViewModelProtocol {
@@ -32,36 +31,8 @@ final class WeatherForecastViewModel: WeatherForecastViewModelProtocol {
 		self.weatherService = weatherService
 		self.locationService = locationService
 	}
-
-	func loadWeather() {
-		locationService.requestLocation { [weak self] result in
-			switch result {
-			case .success(let coordinates):
-				self?.weatherService.fetchForecast(
-					latitude: coordinates.latitude,
-					longitude: coordinates.longitude
-				) { weatherResult in
-					DispatchQueue.main.async {
-						switch weatherResult {
-						case .success(let data):
-							let displayModel = self?.mapToDisplayModel(from: data)
-							self?.onDataUpdate?(displayModel!)
-							self?.hourlyWeather = displayModel!.hourlyForecasts
-							self?.onHourlyUpdate?()
-							self?.dailyWeather = displayModel!.dailyForecasts
-							self?.onDailyUpdate?()
-						case .failure(let error):
-							self?.onError?(error)
-						}
-					}
-				}
-			case .failure(let error):
-				self?.onError?(error)
-			}
-		}
-	}
 	
-	func loadWeather2() {
+	func loadWeather() {
 		locationService.requestLocation { [weak self] location in
 			switch location {
 			case .success(let coordinates):
@@ -128,30 +99,6 @@ private extension WeatherForecastViewModel {
 		
 		let dailyForecasts = mapDailyForecasts(forecast.forecast.forecastday)
 		let hourlyForecasts = mapHourlyForecasts(forecast.forecast.forecastday)
-
-		return WeatherForecastDisplayModel(
-			cityName: cityName,
-			currentTemp: currentTemperture,
-			conditionDescription: conditionDescribtion,
-			conditionIconURL: conditionIconURl,
-			dailyForecasts: dailyForecasts,
-			hourlyForecasts: hourlyForecasts
-		)
-	}
-	
-	
-	
-	func mapToDisplayModel(from data: ForecastWeatherResponse) -> WeatherForecastDisplayModel {
-		
-		let cityName = data.location.name
-		let currentTemperture = "\(Int(data.current.tempC)) C°"
-		let conditionDescribtion = data.current.condition.text
-		let conditionIconURl = /*URL(string: "https: \(data.current.condition.icon)")*/
-		buildIconURL(from: data.current.condition.icon)
-		
-		let dailyForecasts = mapDailyForecasts(data.forecast.forecastday)
-		let hourlyForecasts = mapHourlyForecasts(data.forecast.forecastday)
-		
 
 		return WeatherForecastDisplayModel(
 			cityName: cityName,

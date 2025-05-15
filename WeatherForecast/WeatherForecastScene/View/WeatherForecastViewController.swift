@@ -36,7 +36,7 @@ class WeatherForecastViewController: UIViewController {
 		super.viewDidLoad()
 		bindViewModel()
 		forecastView.activityIndicator.startAnimating()
-		viewModel.loadWeather2()
+		viewModel.loadWeather()
 		setupCollctionView()
 		setupVerticalCollectionView()
 	}

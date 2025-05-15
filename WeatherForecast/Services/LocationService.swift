@@ -25,14 +25,24 @@ final class LocationService: NSObject, CLLocationManagerDelegate, LocationServic
 
 	func requestLocation(completion: @escaping (Result<CLLocationCoordinate2D, Error>) -> Void) {
 		locationCompletion = completion
-		let status = CLLocationManager.authorizationStatus()
-		if status == .notDetermined {
+		
+		let status: CLAuthorizationStatus
+		if #available(iOS 14.0, *) {
+			status = locationManager.authorizationStatus
+		} else {
+			status = CLLocationManager.authorizationStatus()
+		}
+		
+		switch status {
+		case .notDetermined:
 			locationManager.requestWhenInUseAuthorization()
-		} else if status == .denied {
+		case .denied, .restricted:
 			let moscowCoordinate = CLLocationCoordinate2D(latitude: 55.7558, longitude: 37.6173)
 			completion(.success(moscowCoordinate))
-		} else {
+		case .authorizedAlways, .authorizedWhenInUse:
 			locationManager.startUpdatingLocation()
+		default:
+			break
 		}
 	}
 
