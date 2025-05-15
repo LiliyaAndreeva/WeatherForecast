@@ -75,9 +75,6 @@ class WeatherForecastCell: UICollectionViewCell {
 		stackView.addArrangedSubview(progressView)
 		stackView.addArrangedSubview(maxTemperatureLabel)
 		
-		dayLabel.setContentHuggingPriority(.required, for: .horizontal)
-		dayLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
-		
 		stackView.translatesAutoresizingMaskIntoConstraints = false
 		
 		NSLayoutConstraint.activate([

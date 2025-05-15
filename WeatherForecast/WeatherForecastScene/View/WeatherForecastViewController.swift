@@ -53,9 +53,8 @@ private extension WeatherForecastViewController {
 				self?.forecastView.hourlyCollectionView.reloadData()
 				self?.forecastView.dailyCollectionView.reloadData()
 				if let url = model.conditionIconURL {
-					//forecastView.weatherDescribtionLabel.
+					self?.forecastView.weatherIconImageView.kf.setImage(with: url)
 				}
-				//self?.forecastView.activityIndicator.stopAnimating()
 			}
 		}
 

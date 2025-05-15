@@ -13,9 +13,8 @@ final class WeatherForecastView: UIView {
 	private let contentStackView: UIStackView = {
 		let stack = UIStackView()
 		stack.axis = .vertical
-		stack.spacing = Sizes.Paddings.stackSpacing
+		stack.spacing = Sizes.Paddings.miniStackSpacing
 		stack.alignment = .fill
-		stack.backgroundColor = .yellow
 		stack.translatesAutoresizingMaskIntoConstraints = false
 		return stack
 	}()
@@ -33,16 +32,20 @@ final class WeatherForecastView: UIView {
 		let cityLabel = UILabel()
 		cityLabel.textColor = .white
 		cityLabel.textAlignment = .center
-		cityLabel.backgroundColor = .red
 		cityLabel.font = .systemFont(ofSize: Sizes.fontSizes.double, weight: .bold)
 		return cityLabel
+	}()
+	
+	let weatherIconImageView: UIImageView = {
+		let imageView = UIImageView()
+		imageView.contentMode = .scaleAspectFit
+		return imageView
 	}()
 	
 	let temperatureLabel: UILabel = {
 		let tempertureLabel = UILabel()
 		tempertureLabel.textColor = .white
 		tempertureLabel.textAlignment = .center
-		tempertureLabel.backgroundColor = .gray
 		tempertureLabel.font = .systemFont(ofSize: Sizes.fontSizes.normal, weight: .bold)
 		return tempertureLabel
 	}()
@@ -50,8 +53,10 @@ final class WeatherForecastView: UIView {
 	let weatherDescribtionLabel: UILabel = {
 		let weatherDescribtionLabel = UILabel()
 		weatherDescribtionLabel.textColor = .white
+		weatherDescribtionLabel.numberOfLines = 1
+		weatherDescribtionLabel.adjustsFontSizeToFitWidth = true
+		weatherDescribtionLabel.minimumScaleFactor = 0.5
 		weatherDescribtionLabel.textAlignment = .center
-		weatherDescribtionLabel.backgroundColor = .green
 		weatherDescribtionLabel.font = .systemFont(ofSize: Sizes.fontSizes.normal, weight: .bold)
 		return weatherDescribtionLabel
 	}()
@@ -132,6 +137,7 @@ private extension WeatherForecastView {
 		[
 			cityNameLabel,
 			temperatureLabel,
+			weatherIconImageView,
 			weatherDescribtionLabel,
 			hourlyCollectionView,
 			dailyCollectionView,
@@ -175,6 +181,7 @@ private extension WeatherForecastView {
 				),
 				contentStackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
 				hourlyCollectionView.heightAnchor.constraint(equalToConstant: thirdOfScreenWidth),
+				weatherIconImageView.heightAnchor.constraint(equalToConstant: 60),
 
 				activityIndicator.centerXAnchor.constraint(equalTo: centerXAnchor),
 				activityIndicator.centerYAnchor.constraint(equalTo: centerYAnchor)
@@ -183,12 +190,12 @@ private extension WeatherForecastView {
 	}
 }
 
-//TODO: добавить иконку текущего состояния погоды
-//TODO: исправить язык? OK
+
+//TODO: исправить язык? OK добавить локализацию
 //TODO: сделать отображение 7 дней (бесплатная версия только 3 дня, сделала размер коллекции,
 // подстраиваюийся под размер внутреннего контента
-//TODO: исправить конфликтующие констрейнты 
-//TODO: почистить лишние свойства у модели
-//TODO: почистить хардкод
+//TODO: исправить конфликтующие констрейнты +
+//TODO: почистить лишние свойства у модели -
+//TODO: почистить хардкод +
 
 

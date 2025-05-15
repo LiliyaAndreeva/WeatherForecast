@@ -14,7 +14,7 @@ enum APIEndpoint {
 		let key = "fa8b3df74d4042b9aa7135114252304"
 		switch self {
 		case .current(let lat, let lon):
-			return URL(string: "https://api.weatherapi.com/v1/current.json?key=\(key)&q=\(lat),\(lon)")!
+			return URL(string: "https://api.weatherapi.com/v1/current.json?key=\(key)&q=\(lat),\(lon)&lang=ru")!
 		case .forecast(let lat, let lon):
 			return URL(string: "https://api.weatherapi.com/v1/forecast.json?key=\(key)&q=\(lat),\(lon)&days=7&lang=ru")!
 		}

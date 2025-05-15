@@ -46,7 +46,6 @@ final class WeatherForecastViewModel: WeatherForecastViewModelProtocol {
 						case .success(let data):
 							let displayModel = self?.mapToDisplayModel(from: data)
 							self?.onDataUpdate?(displayModel!)
-							
 							self?.hourlyWeather = displayModel!.hourlyForecasts
 							self?.onHourlyUpdate?()
 							self?.dailyWeather = displayModel!.dailyForecasts
@@ -96,16 +95,14 @@ final class WeatherForecastViewModel: WeatherForecastViewModelProtocol {
 					case .failure(let error):
 						fetchError = error
 					}
-						
-					}
+					
+				}
 				
 				group.notify(queue: .main) {
 					guard fetchError == nil else { self?.onError?(fetchError!)
 						return
 					}
-					
 					guard let forecast = forecastData, let current = currentData else { return }
-					
 					let displayModel = self?.mapToDisplayModel(forecast: forecast, current: current)
 					self?.onDataUpdate?(displayModel!)
 					
@@ -117,7 +114,6 @@ final class WeatherForecastViewModel: WeatherForecastViewModelProtocol {
 			case .failure(let error):
 				self?.onError?(error)
 			}
-			
 		}
 	}
 }
@@ -127,7 +123,8 @@ private extension WeatherForecastViewModel {
 		let cityName = current.location.name
 		let currentTemperture = "\(Int(current.current.tempC)) C°"
 		let conditionDescribtion = current.current.condition.text
-		let conditionIconURl = URL(string: "https: \(current.current.condition.icon)")
+		let conditionIconURl = /*URL(string: "https:\(current.current.condition.icon)")*/
+		buildIconURL(from: current.current.condition.icon)
 		
 		let dailyForecasts = mapDailyForecasts(forecast.forecast.forecastday)
 		let hourlyForecasts = mapHourlyForecasts(forecast.forecast.forecastday)
@@ -149,9 +146,12 @@ private extension WeatherForecastViewModel {
 		let cityName = data.location.name
 		let currentTemperture = "\(Int(data.current.tempC)) C°"
 		let conditionDescribtion = data.current.condition.text
-		let conditionIconURl = URL(string: "https: \(data.current.condition.icon)")
+		let conditionIconURl = /*URL(string: "https: \(data.current.condition.icon)")*/
+		buildIconURL(from: data.current.condition.icon)
+		
 		let dailyForecasts = mapDailyForecasts(data.forecast.forecastday)
 		let hourlyForecasts = mapHourlyForecasts(data.forecast.forecastday)
+		
 
 		return WeatherForecastDisplayModel(
 			cityName: cityName,
