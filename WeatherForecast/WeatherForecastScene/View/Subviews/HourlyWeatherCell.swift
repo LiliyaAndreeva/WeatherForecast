@@ -8,10 +8,42 @@
 import UIKit
 final class HourlyWeatherCell: UICollectionViewCell {
 	static let reuseIdentifier = ConstantStrings.hourlyWeatherCellReuseIdentifier
+	
+	private let timeLabel: UILabel = {
+		let label = UILabel()
+		label.font = .systemFont(ofSize: Sizes.fontSizes.light)
+		label.textColor = .white
+		label.textAlignment = .center
+		label.translatesAutoresizingMaskIntoConstraints = false
+		return label
+	}()
+	
+	private let tempLabel: UILabel = {
+		let label = UILabel()
+		label.font = .systemFont(ofSize: Sizes.fontSizes.light)
+		label.textColor = .white
+		label.textAlignment = .center
+		label.translatesAutoresizingMaskIntoConstraints = false
+		return label
+	}()
 
-	private let timeLabel = UILabel()
-	private let tempLabel = UILabel()
-	let iconImageView = UIImageView()
+	private let stackView: UIStackView = {
+		let stack = UIStackView()
+		stack.axis = .vertical
+		stack.alignment = .center
+		stack.distribution = .fill
+		stack.spacing = Sizes.Paddings.tinyStackSpacing
+		stack.translatesAutoresizingMaskIntoConstraints = false
+		return stack
+	}()
+
+	let iconImageView: UIImageView = {
+		let imageView = UIImageView()
+		imageView.contentMode = .scaleAspectFit
+		imageView.tintColor = .white
+		imageView.translatesAutoresizingMaskIntoConstraints = false
+		return imageView
+	}()
 
 	override init(frame: CGRect) {
 		super.init(frame: frame)
@@ -23,41 +55,22 @@ final class HourlyWeatherCell: UICollectionViewCell {
 	}
 
 	private func setup() {
-		timeLabel.font = .systemFont(ofSize: Sizes.fontSizes.light)
-		timeLabel.textColor = .white
-		timeLabel.textAlignment = .center
-		timeLabel.translatesAutoresizingMaskIntoConstraints = false
-
-		iconImageView.contentMode = .scaleAspectFit
-		iconImageView.tintColor = .white
-		iconImageView.translatesAutoresizingMaskIntoConstraints = false
-
-		tempLabel.font = .systemFont(ofSize: Sizes.fontSizes.light)
-		tempLabel.textColor = .white
-		tempLabel.textAlignment = .center
-		tempLabel.translatesAutoresizingMaskIntoConstraints = false
-
-		let stack = UIStackView(arrangedSubviews: [timeLabel, iconImageView, tempLabel])
-		stack.axis = .vertical
-		stack.alignment = .fill
-		stack.spacing = Sizes.Paddings.tinyStackSpacing
-		stack.translatesAutoresizingMaskIntoConstraints = false
-		contentView.addSubview(stack)
-
+		contentView.addSubview(stackView)
+		stackView.addArrangedSubview(timeLabel)
+		stackView.addArrangedSubview(iconImageView)
+		stackView.addArrangedSubview(tempLabel)
+		
 		NSLayoutConstraint.activate([
-			stack.topAnchor.constraint(equalTo: contentView.topAnchor),
-			stack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-			stack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-			stack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-			// ❗️Добавляем ограничение высоты для иконки
-			iconImageView.heightAnchor.constraint(equalToConstant: 30),
+			stackView.topAnchor.constraint(equalTo: contentView.topAnchor),
+			stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+			stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+			stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
 			
-			// (опционально) ограничения по высоте для лейблов:
-			timeLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 15),
-			tempLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 15)
+			timeLabel.heightAnchor.constraint(equalToConstant: 16),
+			tempLabel.heightAnchor.constraint(equalToConstant: 16)
 		])
 	}
-
+	
 	func configure(with model: WeatherForecastDisplayModel.HourlyForecast) {
 		timeLabel.text = model.time
 		tempLabel.text = model.temperature
