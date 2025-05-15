@@ -14,6 +14,7 @@ enum Sizes {
 	
 	enum Paddings {
 		static let sidePadding: CGFloat = 10
+		static let tinyStackSpacing: CGFloat = 4
 		static let miniStackSpacing: CGFloat = 8
 		static let stackSpacing: CGFloat = 20
 		static let topAncorHeight: CGFloat = 24

@@ -15,6 +15,7 @@ final class WeatherForecastView: UIView {
 		stack.axis = .vertical
 		stack.spacing = Sizes.Paddings.stackSpacing
 		stack.alignment = .fill
+		stack.backgroundColor = .yellow
 		stack.translatesAutoresizingMaskIntoConstraints = false
 		return stack
 	}()
@@ -32,6 +33,7 @@ final class WeatherForecastView: UIView {
 		let cityLabel = UILabel()
 		cityLabel.textColor = .white
 		cityLabel.textAlignment = .center
+		cityLabel.backgroundColor = .red
 		cityLabel.font = .systemFont(ofSize: Sizes.fontSizes.double, weight: .bold)
 		return cityLabel
 	}()
@@ -40,6 +42,7 @@ final class WeatherForecastView: UIView {
 		let tempertureLabel = UILabel()
 		tempertureLabel.textColor = .white
 		tempertureLabel.textAlignment = .center
+		tempertureLabel.backgroundColor = .gray
 		tempertureLabel.font = .systemFont(ofSize: Sizes.fontSizes.normal, weight: .bold)
 		return tempertureLabel
 	}()
@@ -48,6 +51,7 @@ final class WeatherForecastView: UIView {
 		let weatherDescribtionLabel = UILabel()
 		weatherDescribtionLabel.textColor = .white
 		weatherDescribtionLabel.textAlignment = .center
+		weatherDescribtionLabel.backgroundColor = .green
 		weatherDescribtionLabel.font = .systemFont(ofSize: Sizes.fontSizes.normal, weight: .bold)
 		return weatherDescribtionLabel
 	}()
@@ -147,7 +151,6 @@ private extension WeatherForecastView {
 		let screenWidth = UIScreen.main.bounds.width
 		let thirdOfScreenWidth = screenWidth / 3
 		let fifthOfScreen = screenWidth / 5
-		let distance = screenWidth * 0.2
 		
 		NSLayoutConstraint.activate(
 			[
@@ -161,51 +164,17 @@ private extension WeatherForecastView {
 				scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
 				scrollView.bottomAnchor.constraint(equalTo: bottomAnchor),
 				
-				contentStackView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+				contentStackView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: fifthOfScreen),
 				contentStackView.leadingAnchor.constraint(
-					equalTo: scrollView.leadingAnchor
+					equalTo: scrollView.leadingAnchor,
+					constant: Sizes.Paddings.horizontalInset
 				),
 				contentStackView.trailingAnchor.constraint(
-					equalTo: scrollView.trailingAnchor
+					equalTo: scrollView.trailingAnchor,
+					constant: -Sizes.Paddings.horizontalInset
 				),
 				contentStackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-				contentStackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-				
-				cityNameLabel.topAnchor.constraint(equalTo: contentStackView.topAnchor, constant: fifthOfScreen),
-				cityNameLabel.centerXAnchor.constraint(equalTo: contentStackView.centerXAnchor),
-				
-				temperatureLabel.topAnchor.constraint(equalTo: cityNameLabel.bottomAnchor, constant: distance),
-				temperatureLabel.centerXAnchor.constraint(equalTo: contentStackView.centerXAnchor),
-				
-				weatherDescribtionLabel.topAnchor.constraint(equalTo: temperatureLabel.bottomAnchor, constant: distance),
-				weatherDescribtionLabel.centerXAnchor.constraint(equalTo: contentStackView.centerXAnchor),
-				
-				hourlyCollectionView.topAnchor.constraint(
-					equalTo: weatherDescribtionLabel.bottomAnchor,
-					constant: Sizes.Paddings.topAncorHeight
-				),
-				hourlyCollectionView.leadingAnchor.constraint(
-					equalTo: contentStackView.leadingAnchor,
-					constant: Sizes.Paddings.horizontalInset
-				),
-				hourlyCollectionView.trailingAnchor.constraint(
-					equalTo: contentStackView.trailingAnchor,
-					constant: -Sizes.Paddings.horizontalInset
-				),
 				hourlyCollectionView.heightAnchor.constraint(equalToConstant: thirdOfScreenWidth),
-				
-				dailyCollectionView.topAnchor.constraint(
-					equalTo: hourlyCollectionView.bottomAnchor,
-					constant: Sizes.Paddings.lineSpacing
-				),
-				dailyCollectionView.leadingAnchor.constraint(
-					equalTo: contentStackView.leadingAnchor,
-					constant: Sizes.Paddings.horizontalInset
-				),
-				dailyCollectionView.trailingAnchor.constraint(
-					equalTo: contentStackView.trailingAnchor,
-					constant: -Sizes.Paddings.horizontalInset
-				),
 
 				activityIndicator.centerXAnchor.constraint(equalTo: centerXAnchor),
 				activityIndicator.centerYAnchor.constraint(equalTo: centerYAnchor)

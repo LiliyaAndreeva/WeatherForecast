@@ -47,19 +47,11 @@ private extension WeatherForecastViewController {
 	func bindViewModel() {
 		viewModel.onDataUpdate = { [weak self] model in
 			DispatchQueue.main.async {
-//				self?.forecastView.cityNameLabel.text = model.cityName
-//				self?.forecastView.temperatureLabel.text = model.currentTemp
-//				self?.forecastView.weatherDescribtionLabel.text = model.conditionDescription
 				self?.update(with: model)
 				self?.hourlyForecasts = model.hourlyForecasts
 				self?.dailyForecasts = model.dailyForecasts
 				self?.forecastView.hourlyCollectionView.reloadData()
 				self?.forecastView.dailyCollectionView.reloadData()
-				
-//				self?.forecastView.hourlyCollectionView.isHidden = false
-//				self?.forecastView.dailyCollectionView.isHidden = false
-				
-				
 				if let url = model.conditionIconURL {
 					//forecastView.weatherDescribtionLabel.
 				}

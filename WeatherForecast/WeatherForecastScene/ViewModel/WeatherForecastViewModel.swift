@@ -114,15 +114,12 @@ final class WeatherForecastViewModel: WeatherForecastViewModelProtocol {
 					self?.dailyWeather = displayModel!.dailyForecasts
 					self?.onDailyUpdate?()
 				}
-				//)
-				
 			case .failure(let error):
 				self?.onError?(error)
 			}
 			
 		}
 	}
-
 }
 
 private extension WeatherForecastViewModel {
