@@ -94,8 +94,7 @@ private extension WeatherForecastViewModel {
 		let cityName = current.location.name
 		let currentTemperture = "\(Int(current.current.tempC)) C°"
 		let conditionDescribtion = current.current.condition.text
-		let conditionIconURl = /*URL(string: "https:\(current.current.condition.icon)")*/
-		buildIconURL(from: current.current.condition.icon)
+		let conditionIconURl = buildIconURL(from: current.current.condition.icon)
 		
 		let dailyForecasts = mapDailyForecasts(forecast.forecast.forecastday)
 		let hourlyForecasts = mapHourlyForecasts(forecast.forecast.forecastday)
