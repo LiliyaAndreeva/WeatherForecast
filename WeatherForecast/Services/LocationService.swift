@@ -57,4 +57,24 @@ final class LocationService: NSObject, CLLocationManagerDelegate, LocationServic
 		locationCompletion?(.failure(error))
 		locationCompletion = nil
 	}
+	
+	func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+		let status: CLAuthorizationStatus
+		if #available(iOS 14.0, *) {
+			status = manager.authorizationStatus
+		} else {
+			status = CLLocationManager.authorizationStatus()
+		}
+		
+		switch status {
+		case .authorizedWhenInUse, .authorizedAlways:
+			locationManager.startUpdatingLocation()
+		case .denied, .restricted:
+			let moscowCoordinate = CLLocationCoordinate2D(latitude: 55.7558, longitude: 37.6173)
+			locationCompletion?(.success(moscowCoordinate))
+			locationCompletion = nil
+		default:
+			break
+		}
+	}
 }
