@@ -11,7 +11,7 @@ enum APIEndpoint {
 	case forecast(lat: Double, lon: Double)
 
 	var url: URL {
-		let key = "fa8b3df74d4042b9aa7135114252304"
+		let key = "680bedb005bd443cb46154008251605"
 		switch self {
 		case .current(let lat, let lon):
 			return URL(string: "https://api.weatherapi.com/v1/current.json?key=\(key)&q=\(lat),\(lon)&lang=ru")!
